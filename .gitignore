@@ -1,0 +1,2 @@
+# No need to keep the binaries in here compile it with make
+*.wasm

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<script>
+		async function init() {
+			// Where is it picking up the WebAssembly library?
+			const { instance } = await WebAssembly.instantiateStreaming(
+				fetch('./bare_metal_wasm.wasm')
+			)
+
+			const WIDTH = 600
+			const HEIGHT = 600
+			const canvas = document.getElementById('demo-canvas')
+			canvas.width = WIDTH
+			canvas.height = HEIGHT
+
+			// Dont know what this is exactly
+			const buffer_address = instance.exports.BUFFER.value
+			const image = new ImageData(
+				new Uint8ClampedArray(
+					instance.exports.memory.buffer,
+					buffer_address,
+					4 * WIDTH * HEIGHT
+				),
+				WIDTH
+			)
+			// Dont know what this is
+			const ctx = canvas.getContext('2d')
+			instance.exports.go()
+			ctx.putImageData(image, 0, 0)
+		}
+		// Runs the init function we just declared here
+		init()
+	</script>
+	<head>
+		<canvas id="demo-canvas"></canvas>
+	</head>
+	<body></body>
+</html>
